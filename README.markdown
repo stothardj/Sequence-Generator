@@ -1,6 +1,6 @@
 # Sequence Genrator
 
-This is another program for me to practice with Haskell. This time I implemented an old CS 31 specification I found online. The complete specification can be found at "http://www.cs.ucla.edu/classes/winter05/cs31/hw/p3/spec.html". It was originally intended to be implemented in C++.
+This is another program for me to practice with Haskell. This time I implemented an old CS 31 specification I found online. The complete specification can be found [here](http://www.cs.ucla.edu/classes/winter05/cs31/hw/p3/spec.html). It was originally intended to be implemented in C++.
 
 ## Running and Installation
 
