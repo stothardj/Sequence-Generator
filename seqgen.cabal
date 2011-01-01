@@ -1,0 +1,13 @@
+Name:		seqgen
+Version:	0.0
+Description:	A simple sequence generator
+License:	BSD3
+License-file:	LICENSE
+Stability:	Experimental
+Author:		Jake Stothard
+Maintainer:	stothardj@gmail.com
+Build-Type:	Simple
+Cabal-Version:	>=1.2
+Executable:	seqgen
+Main-is:	Main.hs
+Build-Depends:	base

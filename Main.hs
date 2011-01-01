@@ -8,23 +8,33 @@ main =
   do
     hSetBuffering stdout NoBuffering
     promptLoop
-    
+
+promptLoop :: IO ()
 promptLoop =
   do
     putStr "Please specify the type of sequence you wish to generate.\n        a  ---  Arithmetic (linear)\n        p  ---  Polynomial (specify degree)\n        g  ---  Geometric  (exponential)\nEnter 'q' to quit or 'h' to display this menu again.\napgqh> "
     choice <- fmap head getLine
-    processChoice choice
+    let maybels = processChoice choice
+    case maybels of
+      Nothing -> return ()
+      Just x ->
+        do
+          ls <- x
+          putStrLn "Fragment:"
+          putStrLn $ formattedList ls
+          putStrLn $ "Fragment Sum  " ++ show (sum ls)
+          promptLoop
 
-processChoice :: Char -> IO ()
+processChoice :: Char -> Maybe (IO [Double])
 processChoice choice
-  | choice == 'q' = return ()
-  | choice == 'h' = promptLoop
-  | choice == 'a' = promptArithmetic
-  | choice == 'p' = promptPolynomial
-  | choice == 'g' = promptGeometric
-  | otherwise = return ()
+  | choice == 'q' = Nothing
+  | choice == 'h' = Nothing -- Fix
+  | choice == 'a' = Just promptArithmetic
+  | choice == 'p' = Just promptPolynomial
+  | choice == 'g' = Just promptGeometric
+  | otherwise = Nothing
                 
-promptArithmetic :: IO ()
+promptArithmetic :: IO [Double]
 promptArithmetic =
   do
     putStr "Arithmetic sequence { a0 + i*d } for i = 0,1,2, ..., L-1.\nEnter the first element a0:                           "
@@ -33,9 +43,9 @@ promptArithmetic =
     diff <- fmap read getLine :: IO Double
     putStr "Enter the fragment length L:                          "
     len <- fmap read getLine
-    finalOutput [first, first + diff .. first + diff * (len - 1) ]
+    return [first, first + diff .. first + diff * (len - 1) ]
 
-promptPolynomial :: IO ()
+promptPolynomial :: IO [Double]
 promptPolynomial =
   do
     putStr "Polynomial sequence { c*(x0+i*d)^n } for i = 0,1,2, ..., L-1.\nEnter the degree n:                       "
@@ -48,9 +58,9 @@ promptPolynomial =
     d <- fmap read getLine :: IO Double
     putStr "Enter the fragment length L:              "
     l <- fmap read getLine
-    finalOutput [ c * (x0 + i * d) ** n | i <- [0..l-1]]
+    return [ c * (x0 + i * d) ** n | i <- [0..l-1]]
 
-promptGeometric :: IO ()
+promptGeometric :: IO [Double]
 promptGeometric =
   do
     putStr "Geometric sequence { a0 * r^(i-1) }  for i = 1,2, ..., L.\nEnter the first element a0:                           "
@@ -59,13 +69,7 @@ promptGeometric =
     r <- fmap read getLine :: IO Double
     putStr "Enter the fragment length L:                          "
     l <- fmap read getLine
-    finalOutput [ a0 * r ^ (i - 1) | i <- [1..l] ]
+    return [ a0 * r ^ (i - 1) | i <- [1..l] ]
 
-finalOutput ls =
-  do
-    putStrLn "Fragment:"    
-    putStrLn $ formattedList ls    
-    putStrLn $ "Fragment Sum  " ++ show (sum ls)
-    promptLoop
     
 formattedList = foldl (\acc x -> acc ++ x) "" . intersperse ",  " . map show
