@@ -3,6 +3,8 @@ module Main where
 import System.IO
 import Data.List (intersperse)
 
+data Choices x = List x | Loop | Quit
+
 main :: IO ()
 main =
   do
@@ -16,8 +18,9 @@ promptLoop =
     choice <- fmap head getLine
     let maybels = processChoice choice
     case maybels of
-      Nothing -> return ()
-      Just x ->
+      Quit -> return ()
+      Loop -> promptLoop
+      List x ->
         do
           ls <- x
           putStrLn "Fragment:"
@@ -25,14 +28,14 @@ promptLoop =
           putStrLn $ "Fragment Sum  " ++ show (sum ls)
           promptLoop
 
-processChoice :: Char -> Maybe (IO [Double])
+processChoice :: Char -> Choices (IO [Double])
 processChoice choice
-  | choice == 'q' = Nothing
-  | choice == 'h' = Nothing -- Fix
-  | choice == 'a' = Just promptArithmetic
-  | choice == 'p' = Just promptPolynomial
-  | choice == 'g' = Just promptGeometric
-  | otherwise = Nothing
+  | choice == 'q' = Quit
+  | choice == 'h' = Loop
+  | choice == 'a' = List promptArithmetic
+  | choice == 'p' = List promptPolynomial
+  | choice == 'g' = List promptGeometric
+  | otherwise = Quit
                 
 promptArithmetic :: IO [Double]
 promptArithmetic =
